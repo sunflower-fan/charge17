@@ -3,6 +3,9 @@ import api.ConnectionException;
 import api.ConnectionManager;
 import api.DownloadListener;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 public class FileDownloader {
 	
 	String url;
@@ -17,7 +20,9 @@ public class FileDownloader {
 		
 	}
 	
-	public void execute(){
+	public void execute() throws IOException {
+
+
 		// 在这里实现你的代码， 注意： 需要用多线程实现下载
 		// 这个类依赖于其他几个接口, 你需要写这几个接口的实现代码
 		// (1) ConnectionManager , 可以打开一个连接，通过Connection可以读取其中的一段（用startPos, endPos来指定）
@@ -33,24 +38,16 @@ public class FileDownloader {
 		// 下面的代码是示例代码， 也就是说只有一个线程， 你需要改造成多线程的。
 		Connection conn = null;
 		try {
-			
 			conn = cm.open(this.url);
-			
-			int length = conn.getContentLength();	
-			
+			int length = conn.getContentLength();
 			new DownloadThread(conn,0,length-1).start();
-			
-		} catch (ConnectionException e) {
+		} catch (ConnectionException | URISyntaxException | IOException e) {
 			e.printStackTrace();
 		}finally{
 			if(conn != null){
 				conn.close();
 			}
 		}
-		
-		
-		
-		
 	}
 	
 	public void setListener(DownloadListener listener) {
